@@ -15,17 +15,28 @@ class Transaction implements Serializable
 {
     int CID;
     int VID;
+    int MID;
     int coinQuant;
     boolean confirmed;
     long timestamp;
 
-    public Transaction(int CID, int VID, int coinQuant, boolean confirmed, long timestamp) {
+    public Transaction(int CID, int VID, int MID, int coinQuant, boolean confirmed, long timestamp) {
         this.CID = CID;
         this.VID = VID;
+        this.MID = MID;
         this.coinQuant = coinQuant;
         this.confirmed = confirmed;
         this.timestamp=timestamp;
     }
+
+    public int getMID() {
+        return MID;
+    }
+
+    public void setMID(int MID) {
+        this.MID = MID;
+    }
+    
 
     public long getTimestamp() {
         return timestamp;

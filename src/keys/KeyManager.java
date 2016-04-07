@@ -5,8 +5,7 @@ import javax.crypto.Cipher;
 
 /**
  * Classe responsável pela criação de chaves e métodos de criptografia
- * @author Cassiano
- * @author Henrique
+ * @author Lucas
  */
 
 public class KeyManager {
@@ -18,11 +17,7 @@ public class KeyManager {
         try {
             // Gera as chaves pública e privada do processo pelo algoritmo RSA
             KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-<<<<<<< HEAD
             keyGen.initialize(512);
-=======
-            keyGen.initialize(1024);
->>>>>>> 4d5f4b6564779f935d8eb516f79ea9cc2b883c3e
 
             KeyPair pair = keyGen.generateKeyPair();
             priv = pair.getPrivate();
