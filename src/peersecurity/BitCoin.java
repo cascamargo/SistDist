@@ -6,6 +6,10 @@ import java.io.*;
 import java.security.*;
 import java.util.ArrayList;
 import java.util.Scanner;
+<<<<<<< HEAD
+import peersecurity.Transaction;
+=======
+>>>>>>> 4d5f4b6564779f935d8eb516f79ea9cc2b883c3e
 
 /**
  * Classe principal do simulador de transações BitCoin para a disciplina de Sistemas Distribuídos
@@ -16,8 +20,15 @@ public class BitCoin {
 
     // Variáveis acessadas pelas outras classes do processo
     static ArrayList<Process> listProcess = new ArrayList<>();
+<<<<<<< HEAD
+    static ArrayList<Transaction> listTransaction = new ArrayList<>();
     protected static PrivateKey privKey;
     
+    
+=======
+    protected static PrivateKey privKey;
+    
+>>>>>>> 4d5f4b6564779f935d8eb516f79ea9cc2b883c3e
     /**
      * @param args the command line arguments
      */
@@ -65,7 +76,11 @@ public class BitCoin {
             MulticastCommunication c;
             UnicastCommunication ru;
             // Inicia as threads de comunicação multicast e unicast
+<<<<<<< HEAD
+            ru = new UnicastCommunication(args[0],process);
+=======
             ru = new UnicastCommunication(process);
+>>>>>>> 4d5f4b6564779f935d8eb516f79ea9cc2b883c3e
             ru.start();
             c = new MulticastCommunication(args[0], process);
             c.start();
@@ -85,21 +100,124 @@ public class BitCoin {
             byte[] m = bos.toByteArray();
             DatagramPacket messageOut = new DatagramPacket(m, m.length, group, 6789);
             s.send(messageOut);
+<<<<<<< HEAD
+            System.out.println("\n[MULTICAST - SEND] Enviando dados do Processo Recém-criado: ID: "+id+" | Porta: "+port+" | Chave Pública: -Long Number- \n | Quant Moedas:"+coinQuant+" | Preço das Moedas: "+coinPrice+"");
+            BitCoin.listProcess.add(new Process(id, port, pubKey, coinQuant, coinPrice ));
+            
+=======
+>>>>>>> 4d5f4b6564779f935d8eb516f79ea9cc2b883c3e
             
             // Compra e Venda
             
             String cmd;
             do {
+<<<<<<< HEAD
+                 //if(process.wait==false){
+                    
+                    System.out.println("\nDigite o comando (C para comprar,V para verificar a situação dos processos, T para verificar o histórico de transações ou S para sair):");
+                    
+                    cmd = in.nextLine().trim();
+                    
+                
+=======
                 System.out.println("Digite o comando (C para comprar, M para mineirar ou S para sair):");
                 cmd = in.nextLine().trim();
+>>>>>>> 4d5f4b6564779f935d8eb516f79ea9cc2b883c3e
                 if (cmd.equalsIgnoreCase("S")) {break;}
                 
                 else if(cmd.equalsIgnoreCase("C"))
                 {
+<<<<<<< HEAD
+                  //verifica qual a melhor oferta de venda
+=======
+>>>>>>> 4d5f4b6564779f935d8eb516f79ea9cc2b883c3e
                   int lowprice = 1000000;
                   int cid=0,cport=0,quant=0,cquant=0;
                   PublicKey pubkey = process.pub;
                     for (Process p : listProcess) {
+<<<<<<< HEAD
+                        if(p.coinQuant>0 && p.ID != process.ID){
+                            if(p.coinPrice < lowprice)
+                            {
+                                lowprice = p.coinPrice;
+                                cid = p.ID;
+                                cport = p.port;
+                                quant = p.coinQuant;
+                            }
+                        }
+                    }
+                    if( listProcess.size() > 1 )
+                    {
+                    System.out.println("O menor preço ofertado entre os processos ativos é: "+lowprice+", Quant disponível: "+quant+" moedas, oferta do processo "+cid+"\nDigite a quantidade de moedas desejadas:");
+                    cquant = Integer.parseInt(in.nextLine().trim());
+                    
+                    
+                        
+                    
+                    if(cquant > quant+1)
+                    {
+                        //caso o valor inserido seja maior que o disp
+                        do{
+                       System.out.println("A Quantia digitada ultrapassa o disponível para a transação (quantia + taxa de mineração), por favor digite novamente: ");
+                       cquant = Integer.parseInt(in.nextLine().trim()); 
+                        }while(cquant>quant+1);
+                    }
+                    
+                    ByteArrayOutputStream bos1 = new ByteArrayOutputStream(10);
+                    ObjectOutputStream oos1 = new ObjectOutputStream(bos1);
+                    oos1.writeChar('C');
+                    oos1.writeInt(process.ID);
+                    oos1.writeInt(process.port);
+                    oos1.writeInt(cquant);
+                    
+                           
+                    oos1.flush();
+                    // Manda a mensagem de requisição de compra para o processo escolhido
+                    byte[] out = bos1.toByteArray();
+                    DatagramPacket messageOut1 = new DatagramPacket(out, out.length, InetAddress.getLocalHost(), cport);
+                    socket.send(messageOut1);
+                    System.out.println("\n[UNICAST - SEND] Enviado pedido de compra de moedas:\nComprador: Processo "+process.ID+" | Vendedor: Processo "+cid+" | Quant: "+cquant+" | Preço: "+lowprice+"");
+                    process.setWait(true);
+                    int pid = process.ID;
+                    boolean status = false;
+                    BitCoin.listTransaction.add(new Transaction(pid, cid, coinQuant, status,0));
+            
+                    while(true)
+                    {
+                        //processo aguarda até validação
+                        System.out.println("Wait do processo: "+process.wait);
+                        if(!process.isWait())
+                        {
+                             break;
+                        }
+                               
+                    }
+                    
+                    
+                }
+                    //caso só exista um processo ativo
+                    else{
+                        System.out.println("\nSó existe um Processo ativo, impossibilitando transações"); 
+                    }
+                    
+                }
+                //imprime lista de Transações
+                else if(cmd.equalsIgnoreCase("T")) {
+                    System.out.println("Lista de Transações:");
+                    for (Transaction t : listTransaction) {
+                           System.out.println("\nComprador: "+t.CID+" | Vendedor: "+t.VID+" | Quant. Moedas: "+t.coinQuant+"| Status da Transação: "+t.confirmed+"| Timestamp: "+t.timestamp);
+                        }
+                    }
+                else if(cmd.equalsIgnoreCase("V")) {
+                    System.out.println("Lista de Processos:");
+                    for (Process p : listProcess) {
+                           System.out.println("\nProcesso: "+p.ID+" | Quantidade de Moedas: "+p.coinQuant);
+                        }
+                    }
+                
+            
+            //}
+=======
                         if(p.coinPrice < lowprice)
                         {
                             lowprice = p.coinPrice;
@@ -148,6 +266,7 @@ public class BitCoin {
                 // Envia a requisição de arquivo ao grupo
                 messageOut = new DatagramPacket(m, m.length, group, 6789);
                 s.send(messageOut);
+>>>>>>> 4d5f4b6564779f935d8eb516f79ea9cc2b883c3e
                 
             }while(true);
             
@@ -166,6 +285,12 @@ public class BitCoin {
     }
 }
 
+<<<<<<< HEAD
+/*
+* Classe que guarda as informações do processo para serem usadas pelas threads    
+*/
+=======
+>>>>>>> 4d5f4b6564779f935d8eb516f79ea9cc2b883c3e
 class Process implements Serializable {
 
     int ID;
@@ -173,6 +298,13 @@ class Process implements Serializable {
     int coinQuant;
     int coinPrice;
     PublicKey pub;
+<<<<<<< HEAD
+    boolean wait;
+    boolean mineflag;
+
+   
+=======
+>>>>>>> 4d5f4b6564779f935d8eb516f79ea9cc2b883c3e
 
     
     
@@ -185,6 +317,27 @@ class Process implements Serializable {
         this.coinPrice = coinPrice;
         
     }
+<<<<<<< HEAD
+
+    public boolean isMineflag() {
+        return mineflag;
+    }
+
+    public void setMineflag(boolean mineflag) {
+        this.mineflag = mineflag;
+    }
+    
+    
+    
+     public boolean isWait() {
+        return wait;
+    }
+
+    public void setWait(boolean wait) {
+        this.wait = wait;
+    }
+=======
+>>>>>>> 4d5f4b6564779f935d8eb516f79ea9cc2b883c3e
     
     public int getCoinQuant() {
         return coinQuant;
@@ -222,3 +375,7 @@ class Process implements Serializable {
         return "Process{" + "ID=" + ID + ", port=" + port + ", pub=" + pub + '}';
     }
 }
+<<<<<<< HEAD
+
+=======
+>>>>>>> 4d5f4b6564779f935d8eb516f79ea9cc2b883c3e
