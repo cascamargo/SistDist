@@ -10,7 +10,7 @@ import peersecurity.Transaction;
 
 /**
  * Classe principal do simulador de transações BitCoin para a disciplina de Sistemas Distribuídos
- * @author Lucas
+ * @author Lucas FDP LIXO
  */
 
 public class BitCoin {
