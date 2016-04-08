@@ -113,14 +113,14 @@ public class MulticastCommunication extends Thread {
                          {
                             Thread.currentThread().interrupt();
                          }
-                         
+                         //criação da timestamp para a ordenação das minerações
                          Timestamp date = new Timestamp(System.currentTimeMillis());
                          long timestamp = date.getTime();
                          //System.out.println("TIMESTAMP:"+timestamp);
-                        
+                        //valida se o processo está livre para minerar
                         if(!process.isWait())
                         {
-                            
+                            //recebe os dados da transação
                             int cid = ois.readInt();
                             int cport = ois.readInt();
                             int vid = ois.readInt();
@@ -144,7 +144,7 @@ public class MulticastCommunication extends Thread {
                             // Descriptografa o arquivo usando a chave pública
                             String decryptedContent = KeyManager.decrypt(cryptedContent, pub);
                             int test = Integer.parseInt(decryptedContent);
-                            
+                            //validação da transação (inclusive da criptografia
                             if (process.ID != cid && process.ID != vid && test == cid )
                             {
                                 //BitCoin.listTransaction.add(new Transaction(cid, vid,process.ID, quant, false,0));
@@ -154,7 +154,6 @@ public class MulticastCommunication extends Thread {
 
                             System.out.println("\n[MULTICAST - RECEIVE] Transação pendente para validação");
 
-                            //atualiza valores do processo
                             
                                     
                                     // long timestamp = getTime();
@@ -176,6 +175,7 @@ public class MulticastCommunication extends Thread {
                             DatagramPacket messageOut = new DatagramPacket(m1, m1.length,group, 6789);
                             s.send(messageOut);
                             System.out.println("\n[MULTICAST - SEND] Enviada validação de transação");
+                            //minerador envia a validação da transação via multicast
                          }
                             else{
                                 System.out.println("ERRO NA DECRIPTAÇÃO, VALIDAÇÃO CONCLUÍDA SEM ÊXITO");
@@ -184,7 +184,8 @@ public class MulticastCommunication extends Thread {
                    }
                         
                     case 'V':
-                      
+                        // tratamento das validações
+                        //recebe as mensagens de mineração
                         int cid = ois.readInt();
                         int cport = ois.readInt();
                         int vid = ois.readInt();
@@ -197,13 +198,15 @@ public class MulticastCommunication extends Thread {
                         
                         if(mid <=50 && mid >=0)
                         {
+                            
                         if(process.ID == vid || process.ID == cid)
                             {   
-                                
+                                //libera processos comprador e vendedor
                                 process.setWait(false);
                                 //System.out.println("LIBEROU PROCESSOS:"+process.ID+"Wait: "+process.wait);
                                 if(process.ID == vid)
                                 {
+                                    //cria as transações e atrela timestamo
                                     if(timestamp1 != 0)
                                     BitCoin.listTransaction.add(new Transaction(cid, vid,mid, quant,false,timestamp1));
                                     
@@ -214,6 +217,7 @@ public class MulticastCommunication extends Thread {
                                              
                                             if (sTimestamp > t.timestamp && t.timestamp != 0)
                                             {
+                                                
                                                  sTimestamp = t.timestamp;
                                                  //System.out.println("TIMESTAMP: "+sTimestamp);
                                                  
@@ -256,6 +260,7 @@ public class MulticastCommunication extends Thread {
                                             
                                             if (sTimestamp == t1.timestamp && sTimestamp != 0)
                                             {
+                                            //valida a transação com o menor timestamp
                                                 cont++;
                                                 if(cont>=1)
                                                 t1.setConfirmed(true);    
@@ -267,7 +272,7 @@ public class MulticastCommunication extends Thread {
                                         }
                                     }
                                     //System.out.println("BitCoin.listTransaction.size()"+BitCoin.listTransaction.size());
-                                    
+                            //pega a transação confirmada da lista de transações e envia para todos os processos        
                             Transaction t2 = BitCoin.listTransaction.get(BitCoin.listTransaction.size()-1);
                             //if(BitCoin.listTransaction.size()>=2)
                              //   BitCoin.listTransaction.remove(BitCoin.listTransaction.size()-1);
@@ -292,12 +297,13 @@ public class MulticastCommunication extends Thread {
 
                             if(t2.isConfirmed())
                             {
+                                //vendedor atualiza a quantidade de moedas
                                 process.coinQuant-=(t2.coinQuant+1);
                                 
                                 System.out.println("\n[MULTICAST - RECEIVE] Transação validada com sucesso pelo minerador: "+mid+" | Comprador: "+t2.CID+" | Vendedor:"+t2.VID+" | quantidade de moedas:"+t2.coinQuant);
                                                  
 
-                                //atualiza valores do banco
+                                //atualiza valores do banco para o vendedor
 
                                 for (Process p : listProcess) {
                                     if(p.ID == t2.MID)
@@ -314,7 +320,7 @@ public class MulticastCommunication extends Thread {
                     }
                         
                     case 'B':
-                        
+                    //atualização do banco de transações e de processos para todos os processos  
                     int tcid = ois.readInt();
                     int tmid = ois.readInt();
                     int tvid = ois.readInt();
@@ -340,14 +346,16 @@ public class MulticastCommunication extends Thread {
                         
                         if(process.ID != tvid && tmid >= 0 && tmid <= 50)
                         {
+                            //se a transação for confirmada
                            if(confirm)
                            {
+                               //atualiza o banco de transações
                                 BitCoin.listTransaction.add(new Transaction(tcid, tvid,tmid, tquant,confirm,timestamp2));
                                 if(process.ID == tmid)
                                     process.coinQuant++;
                                 if(process.ID == tcid)
                                     process.coinQuant+=tquant;
-                                
+                                //atualiza o banco de processos
                                 System.out.println("\n[MULTICAST - RECEIVE] Transação validada com sucesso pelo minerador: "+tmid+" | Comprador: "+tcid+" | Vendedor:"+tvid+" | quantidade de moedas:"+tquant);
                                 for (Process p : listProcess) {
                                     if(p.ID == tmid)

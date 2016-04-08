@@ -11,6 +11,10 @@ import java.io.Serializable;
  * @author Lucas
  * @author Samuel
  */
+
+/*
+* Classe que guarda as informações da transação para serem usadas pelas threads    
+*/
 class Transaction implements Serializable
 {
     int CID;

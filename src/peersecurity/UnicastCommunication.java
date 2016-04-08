@@ -92,7 +92,7 @@ public class UnicastCommunication extends Thread {
                             int cquant = ois.readInt();
 
                             //process.coinQuant = process.coinQuant - cquant;
-                            // Criptografa o conteúdo do arquivo para um array de bytes usando a chave privada
+                            //Criptografa o conteúdo do arquivo para um array de bytes usando a chave privada
                             
                             content+=cid;
                             System.out.println("CONTENT:"+content);

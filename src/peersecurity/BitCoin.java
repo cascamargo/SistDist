@@ -10,12 +10,8 @@ import peersecurity.Transaction;
 
 /**
  * Classe principal do simulador de transações BitCoin para a disciplina de Sistemas Distribuídos
-<<<<<<< HEAD
  * @author Lucas
  * @author Samuel
-=======
- * @author Lucas FDP LIXO
->>>>>>> f101a7d99cb0e3670681bd44b1b67bb72211bc2f
  */
 
 public class BitCoin {
@@ -29,8 +25,7 @@ public class BitCoin {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-        // args give message contents and destination multicast group (e.g. "228.5.6.7")       
+    public static void main(String[] args) {      
         
         PublicKey pubKey;
         int id;
@@ -56,7 +51,7 @@ public class BitCoin {
         File dir = new File(nome);
         dir.mkdirs();*/
 
-        // Gera o par de chaves
+        // Gera o par de chaves para o processo
         KeyManager gensig = new KeyManager();
         privKey = gensig.getPriv();
         pubKey = gensig.getPub();
@@ -65,6 +60,7 @@ public class BitCoin {
         
 
         try {
+            //inicia socket unicast
             socket = new DatagramSocket();
             // Entra no grupo multicast
             InetAddress group = InetAddress.getByName(args[0]);
@@ -102,7 +98,7 @@ public class BitCoin {
             String cmd;
             do {
                  //if(process.wait==false){
-                    
+                    //interface para compra manual de moedas
                     System.out.println("\nDigite o comando (C para comprar,V para verificar a situação dos processos, T para verificar o histórico de transações ou S para sair):");
                     
                     cmd = in.nextLine().trim();
@@ -116,6 +112,7 @@ public class BitCoin {
                   int lowprice = 1000000;
                   int cid=0,cport=0,quant=0,cquant=0;
                   PublicKey pubkey = process.pub;
+                  //percorre a lista de processos buscando os dados da compra
                     for (Process p : listProcess) {
                         if(p.coinQuant>0 && p.ID != process.ID){
                             if(p.coinPrice < lowprice)
@@ -127,6 +124,7 @@ public class BitCoin {
                             }
                         }
                     }
+                    //testes de validação
                     if( listProcess.size() >=3 )
                     {
                     System.out.println("O menor preço ofertado entre os processos ativos é: "+lowprice+", Quant disponível: "+quant+" moedas, oferta do processo: "+cid+"\nDigite a quantidade de moedas desejadas:");
@@ -134,16 +132,16 @@ public class BitCoin {
                     
                     
                         
-                    
+                    //testes de validação
                     if(cquant >= quant-1)
                     {
-                        //caso o valor inserido seja maior que o disp
+                        //caso o valor inserido seja maior que o disp+recompensa
                         do{
                        System.out.println("A Quantia digitada ultrapassa o disponível para a transação (quantia + taxa de mineração), por favor digite novamente: ");
                        cquant = Integer.parseInt(in.nextLine().trim()); 
                         }while(cquant>quant+1);
                     }
-                    
+                    //prepara a mensagem para ser enviada
                     ByteArrayOutputStream bos1 = new ByteArrayOutputStream(10);
                     ObjectOutputStream oos1 = new ObjectOutputStream(bos1);
                     oos1.writeChar('C');
@@ -162,6 +160,7 @@ public class BitCoin {
                     int pid = process.ID;
                     boolean status = false;
                     //BitCoin.listTransaction.add(new Transaction(pid, cid,0, coinQuant, status,0));
+                    //aguarda pelo processo de validação da compra
                     int cont=0;
                     System.out.printf("\nAguardando.");
                     do{
