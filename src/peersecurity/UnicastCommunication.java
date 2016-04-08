@@ -18,8 +18,8 @@ import keys.KeyManager;
 
 /**
  * Thread da comunicação unicast por UDP
- *
  * @author Lucas
+ * @author Samuel
  */
 public class UnicastCommunication extends Thread {
 
@@ -93,7 +93,9 @@ public class UnicastCommunication extends Thread {
 
                             //process.coinQuant = process.coinQuant - cquant;
                             // Criptografa o conteúdo do arquivo para um array de bytes usando a chave privada
+                            
                             content+=cid;
+                            System.out.println("CONTENT:"+content);
                             
                             
                             byte[] cryptedContent = KeyManager.crypt(content, BitCoin.privKey);
@@ -106,7 +108,9 @@ public class UnicastCommunication extends Thread {
                             oos.writeInt(process.ID);
                             oos.writeInt(process.port);
                             oos.writeInt(cquant);
+                            oos.writeInt(cryptedContent.length);
                             oos.write(cryptedContent);
+                            
 
                             oos.flush();
                             // Converte o objeto para uma array de bytes e envia por datagrama

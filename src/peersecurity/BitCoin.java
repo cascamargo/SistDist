@@ -11,6 +11,7 @@ import peersecurity.Transaction;
 /**
  * Classe principal do simulador de transações BitCoin para a disciplina de Sistemas Distribuídos
  * @author Lucas
+ * @author Samuel
  */
 
 public class BitCoin {
@@ -122,15 +123,15 @@ public class BitCoin {
                             }
                         }
                     }
-                    if( listProcess.size() > 1 )
+                    if( listProcess.size() >=3 )
                     {
-                    System.out.println("O menor preço ofertado entre os processos ativos é: "+lowprice+", Quant disponível: "+quant+" moedas, oferta do processo "+cid+"\nDigite a quantidade de moedas desejadas:");
+                    System.out.println("O menor preço ofertado entre os processos ativos é: "+lowprice+", Quant disponível: "+quant+" moedas, oferta do processo: "+cid+"\nDigite a quantidade de moedas desejadas:");
                     cquant = Integer.parseInt(in.nextLine().trim());
                     
                     
                         
                     
-                    if(cquant > quant+1)
+                    if(cquant >= quant-1)
                     {
                         //caso o valor inserido seja maior que o disp
                         do{
@@ -158,17 +159,23 @@ public class BitCoin {
                     boolean status = false;
                     //BitCoin.listTransaction.add(new Transaction(pid, cid,0, coinQuant, status,0));
                     int cont=0;
+                    System.out.printf("\nAguardando.");
                     do{
-                        System.out.println("teste");;//System.out.println("wait do processo:");
+                        cont++;
+                        if(cont==1000)
+                            System.out.printf(".");
                         if(!process.isWait())
+                        {
+                            //System.out.println("Liberado");
                             break;
+                        }
                     }while(process.isWait());
                     
                     
                 }
                     //caso só exista um processo ativo
                     else{
-                        System.out.println("\nSó existe um Processo ativo, impossibilitando transações"); 
+                        System.out.println("\nO Mínimo de 3 processos é necessário para viabilizar transações"); 
                     }
                     
                 }

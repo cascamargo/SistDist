@@ -8,8 +8,8 @@ package peersecurity;
 import java.io.Serializable;
 
 /**
- *
  * @author Lucas
+ * @author Samuel
  */
 class Transaction implements Serializable
 {

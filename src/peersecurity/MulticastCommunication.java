@@ -21,10 +21,10 @@ import java.util.*;
 
 
 /**
- * Thread da comunicação multicast do processo, usada para envio de chave
- * pública e requisição de arquivo
+ * Thread da comunicação multicast do processo
  *
  * @author Lucas
+ * @author Samuel
  */
 public class MulticastCommunication extends Thread {
 
@@ -120,13 +120,17 @@ public class MulticastCommunication extends Thread {
                         
                         if(!process.isWait())
                         {
-                            byte[] cryptedContent = new byte[64];
+                            
                             int cid = ois.readInt();
                             int cport = ois.readInt();
                             int vid = ois.readInt();
                             int vport = ois.readInt();
                             int quant = ois.readInt();
-                            cryptedContent[0] =  (byte) ois.read();
+                            int readLength = ois.readInt();
+                            byte[] cryptedContent = new byte[readLength];
+                            for (int i = 0; i < readLength; i++) {
+                                cryptedContent[i] = ois.readByte();
+                            } 
                             
                             // Procura na lista de processos, pelo número de porta, a chave pública do processo que enviou o arquivo
                             PublicKey pub = null;
@@ -136,12 +140,12 @@ public class MulticastCommunication extends Thread {
                                     break;
                                 }
                             }
-                            /*
+                            
                             // Descriptografa o arquivo usando a chave pública
                             String decryptedContent = KeyManager.decrypt(cryptedContent, pub);
-                            System.out.println("DECRIPT:"+decryptedContent );
-                            */
-                            if (process.ID != cid && process.ID != vid )
+                            int test = Integer.parseInt(decryptedContent);
+                            
+                            if (process.ID != cid && process.ID != vid && test == cid )
                             {
                                 //BitCoin.listTransaction.add(new Transaction(cid, vid,process.ID, quant, false,0));
                             
@@ -173,6 +177,10 @@ public class MulticastCommunication extends Thread {
                             s.send(messageOut);
                             System.out.println("\n[MULTICAST - SEND] Enviada validação de transação");
                          }
+                            else{
+                                System.out.println("ERRO NA DECRIPTAÇÃO, VALIDAÇÃO CONCLUÍDA SEM ÊXITO");
+                                break;
+                            }
                    }
                         
                     case 'V':
@@ -187,7 +195,7 @@ public class MulticastCommunication extends Thread {
                         
                         long sTimestamp = timestamp1;
                         
-                        if(mid <=5000 && mid >=0)
+                        if(mid <=50 && mid >=0)
                         {
                         if(process.ID == vid || process.ID == cid)
                             {   
@@ -313,8 +321,24 @@ public class MulticastCommunication extends Thread {
                     int tquant= ois.readInt();
                     boolean confirm= ois.readBoolean();
                     long timestamp2= ois.readLong();
+                    
+                        if(process.ID == tvid)
+                        {
+                            for (Iterator <Transaction> iterator = listTransaction.iterator(); iterator.hasNext();) {
+                                        Transaction t1 = iterator.next();
+                                        
+                                            if (!t1.isConfirmed())
+                                            {
+                                                iterator.remove();
+                                            }
+                                            // Remove the current element from the iterator and the list.
+                                        }
+                                            
+                                        
+                        }
                         
-                        if(process.ID != tvid && tmid >= 0 && tmid <= 5000)
+                        
+                        if(process.ID != tvid && tmid >= 0 && tmid <= 50)
                         {
                            if(confirm)
                            {
